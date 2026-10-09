@@ -1,1 +1,3 @@
 A tools/**
+# Test fixture only: the script itself, so its own arrival needs no approval (the bot is this repo's founder and cannot approve its own pull request).
+A .github/founder_gate.py
