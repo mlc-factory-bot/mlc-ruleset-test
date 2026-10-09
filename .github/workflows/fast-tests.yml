@@ -1,0 +1,8 @@
+name: fast-tests
+on:
+  pull_request:
+jobs:
+  fast-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "stand-in fast tests pass"

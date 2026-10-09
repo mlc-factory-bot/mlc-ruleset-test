@@ -119,7 +119,7 @@ def pr(repo, number):
     if machinery:
         print(f"RELEASE MACHINERY: {len(machinery)} file(s). Before merging without the founder, both "
               "reviews must say whether it weakens a check on production access, secrets, the deploy "
-              "hold or branch rules, and a REAL rehearsal on the rehearsal copy must pass.")
+              "hold or branch rules, and a REAL rehearsal on the Hostinger staging copy must pass.")
     if not product:
         print("PASS: every file is on the tooling list")
         return
