@@ -1,0 +1,36 @@
+name: founder-gate
+
+# Founder, 9 Oct 2026: tooling merges without the founder's approval. This check passes when
+# every changed file is on .github/tooling-paths, or the founder approved the head commit.
+# pull_request_target runs main's copy of this file and of .github/founder_gate.py, with a
+# read-only token; it never checks out or runs the pull request's code. After the founder
+# approves, rerun the failed check (gh run rerun <run id>); a review does not start it,
+# because a review event would run the pull request's copy of this file.
+# The required check is pinned to GitHub Actions (ruleset). Tested 9 Oct 2026 on a throwaway
+# repository: a pull request's own job named founder-gate, passing, did not let it merge while
+# this job failed or was still running.
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  founder-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # main as it is now, so a rerun reads the current tooling list, not the one
+          # from when the pull request was opened.
+          ref: ${{ github.event.pull_request.base.ref }}
+          persist-credentials: false
+      - name: Founder approval or tooling only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: python3 .github/founder_gate.py pr "$GITHUB_REPOSITORY" "$PR"
