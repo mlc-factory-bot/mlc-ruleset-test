@@ -12,8 +12,8 @@ owner of `*` in .github/CODEOWNERS. Both are read from this checkout, which is m
   founder_gate.py release <owner/repo> <commit> <release workflow file>
       Run by the release before it deploys. Every change that reached main since the release
       workflow last succeeded and touches a file off the tooling list must have come from a
-      pull request the founder approved at its head commit, or be cleared by a later one whose
-      description says "Clears founder-gate refusal: <commit>". Changes before this script
+      pull request the founder approved at its head commit, or be cleared by a later one with
+      "Clears founder-gate refusal: <commit>" in one of its commit messages. Changes before this script
       existed were all founder-approved, so the walk stops there too.
 
 Every changed file is printed with the rule that passed or stopped it. Exit 0 = pass.
@@ -119,7 +119,7 @@ def pr(repo, number):
     if machinery:
         print(f"RELEASE MACHINERY: {len(machinery)} file(s). Before merging without the founder, both "
               "reviews must say whether it weakens a check on production access, secrets, the deploy "
-              "hold or branch rules, and a REAL rehearsal on the Hostinger staging copy must pass.")
+              "hold or branch rules, and a REAL rehearsal on the rehearsal copy must pass.")
     if not product:
         print("PASS: every file is on the tooling list")
         return
@@ -161,7 +161,10 @@ def release(repo, sha, workflow):
         ok, why = (approved(repo, pulls[0]["number"], pulls[0]["head"]["sha"], who) if len(pulls) == 1
                    else (False, "it is not one pull request's merge into main"))
         if ok:  # newer commits come first, so a clearing pull request is seen before what it clears
-            clears |= set(CLEARS.findall(pulls[0].get("body") or ""))
+            # From its commit messages, which the approval fixes (any push dismisses it); its
+            # description could still be edited after the approval.
+            for pc in api(f"repos/{repo}/pulls/{pulls[0]['number']}/commits?per_page=100"):
+                clears |= set(CLEARS.findall(pc["commit"]["message"]))
         if not product:
             continue
         if c in clears:
@@ -173,8 +176,8 @@ def release(repo, sha, workflow):
             refused.append(c)
     if refused:
         print("Nothing was deployed. Who acts: the product's lead. For each refused commit, open a pull "
-              "request that undoes it, or that keeps it, with this line in its description, and ask the "
-              "founder to approve it after reading the refused commit:")
+              "request that undoes it, or that keeps it, with this line in one of its commit messages, "
+              "and ask the founder to approve it after reading the refused commit:")
         for c in refused:
             print(f"  Clears founder-gate refusal: {c}")
         fail(f"{len(refused)} change(s) to product files without the founder's approval")
