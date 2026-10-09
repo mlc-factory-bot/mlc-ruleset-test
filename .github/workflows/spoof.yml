@@ -1,0 +1,8 @@
+name: spoof
+on:
+  pull_request:
+jobs:
+  founder-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "a copy that always passes"
