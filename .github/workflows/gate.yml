@@ -1,0 +1,8 @@
+name: gate
+on:
+  pull_request_target:
+jobs:
+  founder-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "the real gate refuses"; exit 1
