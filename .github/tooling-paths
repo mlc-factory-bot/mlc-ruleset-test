@@ -1,3 +1,43 @@
-A tools/**
-# Test fixture only: the script itself, so its own arrival needs no approval (the bot is this repo's founder and cannot approve its own pull request).
-A .github/founder_gate.py
+# Files that may reach main without the founder's approval (founder, 9 Oct 2026: tooling
+# merges after both reviews; option (ii) for release machinery). founder-gate reads this
+# copy on main, never the pull request's, and the release refuses any other file that
+# changed since the last verified release unless the founder approved its pull request.
+#
+# One pattern per line, from the repo root. The last line that matches a file decides.
+#   A <pattern>   tooling that never runs in a release
+#   B <pattern>   release machinery: both reviews say whether it weakens a check on production
+#                 access, secrets, the deploy hold or branch rules (if so, the founder
+#                 approves), and a REAL rehearsal on the rehearsal copy passes first
+#   ! <pattern>   never on the list: the founder approves
+# * matches within one folder; ** matches across folders.
+
+# A: never runs in a release
+A ops/release/server/README.md
+A tests/**
+A tooling/**
+A docs/**
+A sandbox/**
+
+# B: release machinery, which runs with the deploy key or on production (after A, so these
+# win inside sandbox)
+B ops/release/ci/**
+# The release runner: deploys refuse until the founder installs the newest one, and it runs on
+# every deploy and undo, so it is release machinery, not tooling.
+B ops/release/server/**
+A ops/release/server/README.md
+B sandbox/lib/**
+B scripts/**
+
+# Never on the list
+# install.sh and the forced commands decide what each key may do on the server.
+! ops/release/server/install.sh
+! ops/release/server/release-command
+! ops/release/server/maintenance-command
+! ops/release/server/read-command
+! ops/release/server/app-errors.py
+# The protected-schema guard: a change here changes a production data check.
+! ops/release/server/guarded-schema.py
+! ops/release/server/public-schema.sql
+! docs/decisions/**
+! docs/decisions-*
+! docs/accepted-capabilities.md

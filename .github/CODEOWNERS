@@ -1,2 +1,39 @@
-*  @mlc-factory-bot
-/tools/
+# Who must approve a change to main (founder, 25 Sep and 9 Oct 2026). GitHub reads this copy
+# on main, never the pull request's. The last matching line decides.
+# Every file needs the founder, except the tooling and release machinery listed with no owner
+# below: those merge after both reviews. Release machinery (ops/release/ci, ops/release/server,
+# sandbox/lib, scripts) also needs a REAL rehearsal first, and both reviews say whether it
+# weakens production access, secrets, the deploy hold or branch rules (if so, the founder
+# approves). The lines that follow those name the founder again for files that decide what a
+# key may do, guard production data, or record his decisions.
+*    @ShaheedFazal
+
+# Tooling that never runs in a release
+/tests/
+/tooling/
+/docs/
+/sandbox/
+
+# Release machinery
+/ops/release/ci/
+/ops/release/server/
+/sandbox/lib/
+/scripts/
+
+# Until launch: fixes in these product paths need both reviewers (founder, 11 Oct 2026).
+# founder-gate still requires his approval for features. Delete fix-route at launch.
+/schema/
+/ops/release/coolify/
+
+# The founder again
+/tests/acceptance/                         @ShaheedFazal
+/ops/release/server/install.sh             @ShaheedFazal
+/ops/release/server/release-command        @ShaheedFazal
+/ops/release/server/maintenance-command    @ShaheedFazal
+/ops/release/server/read-command           @ShaheedFazal
+/ops/release/server/app-errors.py          @ShaheedFazal
+/ops/release/server/guarded-schema.py      @ShaheedFazal
+/ops/release/server/public-schema.sql      @ShaheedFazal
+/docs/decisions/                           @ShaheedFazal
+/docs/decisions-*                          @ShaheedFazal
+/docs/accepted-capabilities.md             @ShaheedFazal

@@ -6,9 +6,11 @@ name: founder-gate
 # read-only token; it never checks out or runs the pull request's code. After the founder
 # approves, rerun the failed check (gh run rerun <run id>); a review does not start it,
 # because a review event would run the pull request's copy of this file.
-# The required check is pinned to GitHub Actions (ruleset). Tested 9 Oct 2026 on a throwaway
-# repository: a pull request's own job named founder-gate, passing, did not let it merge while
-# this job failed or was still running.
+# Tested 9 Oct 2026 on a throwaway repository: a pull request's own job named founder-gate,
+# passing, did not let it merge while this job failed or was still running. What blocks it is
+# that GitHub requires every check run with that name to pass. The ruleset's pin to GitHub
+# Actions does not tell the two apart (both report as GitHub Actions); it only stops a commit
+# status posted with a token from counting.
 on:
   pull_request_target:
     branches: [main]
